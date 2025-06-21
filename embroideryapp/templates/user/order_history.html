@@ -1,0 +1,66 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Order History</h2>
+    
+    {% if orders_with_payments %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Products</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Payment Method</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in orders_with_payments %}
+                <tr>
+                    <td>{{ item.order.id }}</td>
+                    <td>{{ item.order.order_date|date:"M d, Y" }}</td>
+                    <td>
+                        <ul class="mb-0 pl-3">
+                        {% for order_item in item.order.items.all %}
+                            <li>
+                                {{ order_item.product.name }} 
+                                <span class="text-muted">(x{{ order_item.quantity }})</span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </td>
+                    <td>₹{{ item.order.total_amount }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if item.order.status == 'completed' %}badge-success
+                            {% elif item.order.status == 'cancelled' %}badge-danger
+                            {% else %}badge-warning{% endif %}">
+                            {{ item.order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if item.payment %}
+                            {{ item.payment.get_payment_method_display }}
+                        {% else %}
+                            Not Paid
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'order_detail' item.order.id %}" class="btn btn-sm btn-info">View Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You haven't placed any orders yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

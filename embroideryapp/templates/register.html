@@ -1,0 +1,74 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow-sm mt-5">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Register</h2>
+          
+          <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label for="id_name" class="form-label">Name</label>
+              <input type="text" class="form-control" name="name" id="id_name" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="id_email" class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" id="id_email" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="id_password" class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" id="id_password" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="id_phone_number" class="form-label">Phone Number</label>
+              <input type="text" class="form-control" name="phone_number" id="id_phone_number" required>
+            </div>
+            
+            <div class="mb-4">
+              <label for="id_address" class="form-label">Address</label>
+              <textarea class="form-control" name="address" id="id_address" rows="3" required></textarea>
+            </div>
+            
+            <div class="d-grid mb-3">
+              <button type="submit" class="btn btn-primary btn-lg">Register</button>
+            </div>
+            
+            <p class="text-center">
+              Already have an account? <a href="{% url 'login' %}">Login here</a>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border-radius: 10px;
+  }
+  .form-control {
+    padding: 10px;
+    border-radius: 8px;
+  }
+  .btn-primary {
+    background-color: #4e73df;
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+  }
+  .btn-primary:hover {
+    background-color: #2e59d9;
+  }
+  label {
+    font-weight: 500;
+  }
+</style>
+{% endblock %}

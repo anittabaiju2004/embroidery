@@ -1,0 +1,77 @@
+{% extends 'seller/seller_index.html' %}
+{% block content %}
+<style>
+    h2 {
+        text-align: center;
+        color: #333;
+    }
+
+    label {
+        font-weight: bold;
+        display: block;
+        margin-top: 10px;
+    }
+
+    input,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    textarea {
+        resize: vertical;
+        height: 80px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 15px;
+        border: none;
+        background-color: #28a745;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #218838;
+    }
+</style>
+
+
+<div class="container">
+    <h2>Add a New Product</h2>
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data"> <!-- Add enctype -->
+        {% csrf_token %}
+        <label>Name:</label>
+        <input type="text" name="name" required>
+
+        <label>Price:</label>
+        <input type="number" name="price" step="0.01" required>
+
+        <label>Description:</label>
+        <textarea name="description" required></textarea>
+
+        <label>Image:</label>
+        <input type="file" name="image" accept="image/*">
+
+        <label>Stock:</label>
+        <input type="number" name="stock" min="0" placeholder="Enter stock quantity">
+
+
+        <button type="submit">Add Product</button>
+    </form>
+</div>
+{% endblock %}

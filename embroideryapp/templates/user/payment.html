@@ -1,0 +1,254 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+<style>
+.payment-container {
+    max-width: 480px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.13);
+    padding: 32px 28px 24px 28px;
+}
+.payment-container h2 {
+    text-align: center;
+    margin-bottom: 18px;
+    color: #007bff;
+}
+.payment-container p {
+    font-size: 15px;
+    margin: 6px 0;
+}
+.tabs {
+    display: flex;
+    margin-bottom: 18px;
+    border-bottom: 2px solid #eee;
+}
+.tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #555;
+    transition: border-color 0.2s, color 0.2s;
+}
+.tab-btn.active {
+    border-bottom: 2.5px solid #007bff;
+    color: #007bff;
+    background: #f7faff;
+}
+.payment-tab-content {
+    display: none;
+    margin-top: 10px;
+}
+.payment-tab-content.active {
+    display: block;
+}
+.form-group {
+    margin-bottom: 14px;
+    text-align: left;
+}
+.form-group label {
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 4px;
+    display: block;
+}
+.form-control {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+}
+.form-row {
+    display: flex;
+    gap: 12px;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.btn-primary {
+    width: 100%;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 18px;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: #0056b3;
+}
+.input-error {
+    border-color: #d32f2f !important;
+    background: #fff0f0;
+}
+.error-message {
+    color: #d32f2f;
+    font-size: 13px;
+    margin-bottom: 8px;
+    margin-top: -8px;
+}
+</style>
+{% if messages %}
+<div class="alert alert-success">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="payment-container">
+    <h2>Payment for Order #{{ order.id }}</h2>
+    <p><strong>Product:</strong> {{ order.product.name }}</p>
+    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+    <p><strong>Total Amount:</strong> ₹{{ order.total_amount }}</p>
+    
+    <form method="post" id="payment-form" novalidate>
+        {% csrf_token %}
+        <div class="tabs">
+            <button type="button" class="tab-btn active" data-tab="upi-tab">UPI</button>
+            <button type="button" class="tab-btn" data-tab="card-tab">Card</button>
+            <button type="button" class="tab-btn" data-tab="cod-tab">COD</button>
+        </div>
+        <input type="hidden" name="payment_method" id="payment_method" value="upi">
+
+        <div id="upi-tab" class="payment-tab-content active">
+            <div class="form-group">
+                <label for="upi_id">UPI ID</label>
+                <input type="text" class="form-control" id="upi_id" name="upi_id" placeholder="yourname@upi">
+            </div>
+        </div>
+        <div id="card-tab" class="payment-tab-content">
+            <div class="form-group">
+                <label for="card_holder_name">Card Holder Name</label>
+                <input type="text" class="form-control" id="card_holder_name" name="card_holder_name" placeholder="Name on card">
+            </div>
+            <div class="form-group">
+                <label for="card_number">Card Number</label>
+                <input type="text" class="form-control" id="card_number" name="card_number" placeholder="1234 5678 9012 3456"
+                    pattern="^\d{16}$" maxlength="16" inputmode="numeric" autocomplete="cc-number" required>
+                <div id="card-number-error" class="error-message" style="display:none;">Card number must be 16 digits.</div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="card_expiry">Expiry Date (MM/YY)</label>
+                    <input type="text" class="form-control" id="card_expiry" name="card_expiry" placeholder="MM/YY" autocomplete="cc-exp">
+                </div>
+                <div class="form-group">
+                    <label for="card_cvv">CVV</label>
+                    <input type="text" class="form-control" id="card_cvv" name="card_cvv" placeholder="123"
+                        pattern="^\d{3}$" maxlength="3" inputmode="numeric" autocomplete="cc-csc" required>
+                    <div id="cvv-error" class="error-message" style="display:none;">CVV must be 3 digits.</div>
+                </div>
+            </div>
+        </div>
+        <div id="cod-tab" class="payment-tab-content">
+            <p style="margin-top:10px;">You have selected <strong>Cash on Delivery</strong>. No payment details required.</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Complete Payment</button>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.payment-tab-content');
+    const paymentMethodInput = document.getElementById('payment_method');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.tab).classList.add('active');
+            // Set payment_method value
+            if (this.dataset.tab === 'upi-tab') paymentMethodInput.value = 'upi';
+            else if (this.dataset.tab === 'card-tab') paymentMethodInput.value = 'card';
+            else if (this.dataset.tab === 'cod-tab') paymentMethodInput.value = 'cod';
+        });
+    });
+
+    // Card validation
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', function(e) {
+        let valid = true;
+        // Card validation only if card tab is active
+        if (paymentMethodInput.value === 'card') {
+            // Card number validation
+            const cardNumber = document.getElementById('card_number');
+            const cardNumberError = document.getElementById('card-number-error');
+            if (!/^\d{16}$/.test(cardNumber.value)) {
+                cardNumber.classList.add('input-error');
+                cardNumberError.style.display = 'block';
+                valid = false;
+            } else {
+                cardNumber.classList.remove('input-error');
+                cardNumberError.style.display = 'none';
+            }
+            // CVV validation
+            const cardCvv = document.getElementById('card_cvv');
+            const cvvError = document.getElementById('cvv-error');
+            if (!/^\d{3}$/.test(cardCvv.value)) {
+                cardCvv.classList.add('input-error');
+                cvvError.style.display = 'block';
+                valid = false;
+            } else {
+                cardCvv.classList.remove('input-error');
+                cvvError.style.display = 'none';
+            }
+            // Expiry date validation
+            const cardExpiry = document.getElementById('card_expiry');
+            let expiryError = document.getElementById('expiry-error');
+            if (!expiryError) {
+                expiryError = document.createElement('div');
+                expiryError.id = 'expiry-error';
+                expiryError.className = 'error-message';
+                cardExpiry.parentNode.appendChild(expiryError);
+            }
+            expiryError.style.display = 'none';
+            cardExpiry.classList.remove('input-error');
+            const expVal = cardExpiry.value.trim();
+            const expMatch = expVal.match(/^(\d{2})\/(\d{2})$/);
+            if (!expMatch) {
+                expiryError.textContent = 'Expiry must be in MM/YY format.';
+                expiryError.style.display = 'block';
+                cardExpiry.classList.add('input-error');
+                valid = false;
+            } else {
+                const now = new Date();
+                const inputMonth = parseInt(expMatch[1], 10);
+                const inputYear = 2000 + parseInt(expMatch[2], 10);
+                if (inputMonth < 1 || inputMonth > 12) {
+                    expiryError.textContent = 'Invalid month in expiry.';
+                    expiryError.style.display = 'block';
+                    cardExpiry.classList.add('input-error');
+                    valid = false;
+                } else {
+                    // Set to last day of the expiry month
+                    const expiryDate = new Date(inputYear, inputMonth, 0, 23, 59, 59);
+                    if (expiryDate < now) {
+                        expiryError.textContent = 'Card expiry date cannot be in the past.';
+                        expiryError.style.display = 'block';
+                        cardExpiry.classList.add('input-error');
+                        valid = false;
+                    } else {
+                        expiryError.style.display = 'none';
+                        cardExpiry.classList.remove('input-error');
+                    }
+                }
+            }
+            if (!valid) e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

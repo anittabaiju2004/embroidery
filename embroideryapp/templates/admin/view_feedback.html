@@ -1,0 +1,38 @@
+{% extends 'admin/admin_index.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All Feedback</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% for feedback in feedbacks %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <strong>{{ feedback.name }}</strong>
+            <span class="badge bg-warning text-dark">⭐ {{ feedback.rating }}/5</span>
+            <p>{{ feedback.comment }}</p>
+            <small class="text-muted">{{ feedback.created_at|date:"F d, Y" }}</small>
+            <hr>
+            <strong>Admin Reply:</strong>
+            {% if feedback.admin_reply %}
+            <p class="mb-0">{{ feedback.admin_reply }}</p>
+            {% else %}
+            <form method="post" class="mt-2">
+                {% csrf_token %}
+                <input type="hidden" name="feedback_id" value="{{ feedback.id }}">
+                <div class="input-group">
+                    <input type="text" name="admin_reply" class="form-control" placeholder="Type your reply..." required>
+                    <button type="submit" class="btn btn-primary btn-sm">Reply</button>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "admin/admin_index.html" %}
+
+{% block content %}
+
+<!-- Tab Content -->
+<div class="tab-content mt-3">
+    <!-- Pending Sellers -->
+    <div class="tab-pane fade show active" id="pending">
+        <h3>Pending Sellers</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for seller in pending_sellers %}
+                <tr>
+                    <td>{{ seller.id }}</td>
+                    <td>{{ seller.name }}</td>
+                    <td>{{ seller.email }}</td>
+                    <td>{{ seller.phone_number }}</td>
+                    <td>{{ seller.address }}</td>
+                    <td>
+                        <a href="{% url 'approve_seller' seller.id %}" class="btn btn-success btn-sm">Approve</a>
+                        <a href="{% url 'reject_seller' seller.id %}" class="btn btn-danger btn-sm">Reject</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No pending sellers</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

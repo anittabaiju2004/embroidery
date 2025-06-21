@@ -1,0 +1,65 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Product Orders</h2>
+
+    {% if orders_with_payments %}
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Order #</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in orders_with_payments %}
+                <tr>
+                    <td>{{ item.order.id }}</td>
+                    <td>{{ item.order.order_date|date:"M d, Y" }}</td>
+                    <td>{{ item.order.user.name }}</td>
+                    <td>
+                        {% for order_item in item.order.items.all %}
+                        {{ order_item.product.name }}{% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for order_item in item.order.items.all %}
+                        {{ order_item.quantity }}{% if not forloop.last %}<br>{% endif %}
+                        {% endfor %}
+                    </td>
+
+                    <td>₹{{ item.order.total_amount }}</td>
+                    <td>
+                        {% if item.payment %}
+                        <span class="badge 
+                                {% if item.payment.is_successful %}badge-success
+                                {% else %}badge-danger{% endif %}">
+                            {{ item.payment.get_payment_method_display }}
+                        </span>
+                        {% else %}
+                        <span class="badge badge-secondary">Pending</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'seller_order_detail' item.order.id %}" class="btn btn-sm btn-info">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any orders yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

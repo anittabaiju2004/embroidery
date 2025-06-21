@@ -1,0 +1,181 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+<style>
+    /* ---------- Card Layout ---------- */
+    .product-detail-card {
+        max-width: 900px;
+        /* wider card */
+        margin: 48px auto;
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 26px rgba(0, 0, 0, 0.12);
+        padding: 40px 36px 32px 36px;
+        display: flex;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    /* ---------- Left (Image) ---------- */
+    .product-detail-left {
+        flex: 1 1 320px;
+        /* grow nicely on large screens */
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .product-detail-left img {
+        width: 100%;
+        /* responsive */
+        max-width: 350px;
+        /* bigger picture */
+        height: auto;
+        /* keep aspect ratio */
+        object-fit: contain;
+        border-radius: 12px;
+        background: #f4f4f4;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ---------- Right (Details) ---------- */
+    .product-detail-right {
+        flex: 1 1 380px;
+        /* let text grow */
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .product-detail-right label {
+        font-weight: 600;
+        color: #333;
+        display: block;
+    }
+
+    .product-detail-right .info-value {
+        font-weight: 400;
+        color: #555;
+        margin-left: 6px;
+    }
+
+    /* ---------- Quantity inputs ---------- */
+    input[type="number"] {
+        width: 80px;
+        padding: 8px 10px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    /* ---------- Buttons ---------- */
+    .btn {
+        width: 180px;
+        /* SAME width for all buttons */
+        padding: 10px 0;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        border-radius: 6px;
+        transition: background 0.25s ease, transform 0.15s ease;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background: #0062d6;
+    }
+
+    .btn-secondary {
+        background: #ff7e5f;
+        color: #fff;
+    }
+
+    .btn-secondary:hover {
+        background: #ff6239;
+    }
+
+    /* ---------- Forms ---------- */
+    .action-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .action-row+.action-row {
+        /* space between the two action groups */
+        margin-top: 6px;
+    }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 768px) {
+        .product-detail-card {
+            padding: 28px 20px;
+            gap: 24px;
+        }
+
+        .btn {
+            width: 100%;
+            /* full‑width buttons on mobile */
+        }
+
+        input[type="number"] {
+            width: 100%;
+        }
+    }
+</style>
+{% if messages %}
+<div class="alert alert-success">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="product-detail-card">
+    <!-- Left: image -->
+    <div class="product-detail-left">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    </div>
+
+    <!-- Right: details and actions -->
+    <div class="product-detail-right">
+        <label>Product Name:<span class="info-value">{{ product.name }}</span></label>
+        <label>Description:<span class="info-value">{{ product.description }}</span></label>
+        <label>Price:<span class="info-value">₹{{ product.price }}</span></label>
+        <label>Stock:<span class="info-value">{{ product.stock }}</span></label>
+        <label>Seller:<span class="info-value">{{ product.seller.name }}</span></label>
+
+        {% if product.stock > 0 %}
+        <!-- Buy Now -->
+        <form method="post" action="{% url 'buy_now' product.id %}" id="buy-now-form">
+            {% csrf_token %}
+            <div class="action-row">
+                <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
+                <button type="submit" class="btn btn-primary">Buy Now</button>
+            </div>
+        </form>
+
+        <!-- Add to Cart -->
+        <form method="post" action="{% url 'add_to_cart' product.id %}" id="add-to-cart-form">
+            {% csrf_token %}
+            <div class="action-row">
+                <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
+                <button type="submit" class="btn btn-secondary">Add to Cart</button>
+            </div>
+        </form>
+        {% else %}
+        <p class="text-danger">Out of Stock</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

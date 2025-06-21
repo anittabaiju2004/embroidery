@@ -1,0 +1,56 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+{% if messages %}
+<div class="alert alert-success">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      <div class="card shadow-lg mt-5">
+        <div class="card-body p-5">
+          <h1 class="mb-4">Checkout</h1>
+          
+          <div class="success-box p-4 mb-4">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+            <h2 class="text-success mt-3">Order Placed Successfully!</h2>
+            <p class="lead mt-3"><strong>Total Price:</strong> ₹{{ total_price }}</p>
+          </div>
+          
+          <a href="{% url 'user_view_products' %}" class="btn btn-primary btn-lg">
+            <i class="bi bi-cart-plus"></i> Continue Shopping
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .success-box {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    border-left: 5px solid #28a745;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 15px;
+  }
+  
+  .btn-primary {
+    padding: 12px 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'seller/seller_index.html' %}
+{% block content %}
+<style>
+    .product-list-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 40px auto 0 auto;
+    }
+    .product-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+        justify-content: center;
+    }
+    .product-card {
+        background: #fff;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.12), 0 1.5px 6px rgba(0,0,0,0.08);
+        padding: 24px 18px 18px 18px;
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        transition: box-shadow 0.2s;
+        position: relative;
+    }
+    .product-card:hover {
+        box-shadow: 0 12px 32px rgba(0,0,0,0.18), 0 3px 12px rgba(0,0,0,0.12);
+    }
+    .product-card img {
+        max-width: 120px;
+        max-height: 120px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        background: #f8f8f8;
+        object-fit: cover;
+    }
+    .product-card h5 {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #ff7e5f;
+    }
+    .product-card p {
+        margin: 0 0 6px 0;
+        color: #444;
+        font-size: 1rem;
+    }
+    .product-card .btn-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+    .product-card .btn {
+        min-width: 80px;
+        font-size: 0.95rem;
+        border-radius: 5px;
+        font-weight: 500;
+    }
+    .add-product-btn {
+        margin-top: 32px;
+        font-size: 1.1rem;
+        border-radius: 6px;
+        padding: 10px 28px;
+        font-weight: bold;
+    }
+</style>
+{% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+<div class="product-list-container">
+    <h2 class="text-center mb-4">Your Products</h2>
+    <div class="product-grid">
+        {% for product in products %}
+        <div class="product-card">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/120x120?text=No+Image" alt="No Image">
+            {% endif %}
+            <h5>{{ product.name }}</h5>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+            <p><strong>Price:</strong> ₹{{ product.price }}</p>
+            <p><strong>Description:</strong> {{ product.description }}</p>
+            <div class="btn-container">
+                <a href="{% url 'edit_product' product.id %}" class="btn btn-primary btn-sm">✏️ Edit</a>
+                <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?');">🗑️ Delete</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="product-card" style="width:100%;text-align:center;">
+            <p>You haven't added any products yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center">
+        <a href="{% url 'add_product' %}" class="btn btn-success add-product-btn">➕ Add Product</a>
+    </div>
+</div>
+{% endblock %}

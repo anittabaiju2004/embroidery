@@ -1,0 +1,62 @@
+{% extends 'admin/admin_index.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Admin Commissions</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Total Commissions</h5>
+                    <h3 class="text-success">₹{{ total_commissions|floatformat:2 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h4>All Commission Records</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Order</th>
+                            <th>Product</th>
+                            <th>Seller</th>
+                            <th>User</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commission in commissions %}
+                        <tr>
+                            <td>{{ commission.id }}</td>
+                            <td>#{{ commission.order.id }}</td>
+                            <td>{{ commission.product.name }}</td>
+                            <td>{{ commission.seller.name }}</td>
+                            <td>{{ commission.user.name }}</td>
+                            <td>₹{{ commission.amount|floatformat:2 }}</td>
+                            <td>
+                                <a href="{% url 'commission_detail' commission.id %}" class="btn btn-sm btn-info">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No commissions found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h2 class="text-center mb-0">Videos</h2>
+    </div>
+    <div class="card-body">
+      {% if videos %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th class="text-center">Title</th>
+              <th class="text-center">Description</th>
+              <th class="text-center">Video</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for video in videos %}
+            <tr>
+              <td class="align-middle">{{ video.title }}</td>
+              <td class="align-middle">{{ video.description }}</td>
+              <td class="text-center">
+                <div class="video-container">
+                  <video width="220" controls class="rounded shadow-sm">
+                    <source src="{{ video.video_file.url }}" type="video/mp4">
+                    Your browser does not support video playback.
+                  </video>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert alert-info text-center">
+        <i class="bi bi-info-circle-fill"></i> No videos available
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .video-container {
+    display: inline-block;
+    margin: 0 auto;
+  }
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+  .card {
+    border: none;
+    border-radius: 12px;
+  }
+  .card-header {
+    border-radius: 12px 12px 0 0 !important;
+  }
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+{% endblock %}

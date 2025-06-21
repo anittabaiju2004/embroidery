@@ -1,0 +1,20 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>All Feedback</h2>
+
+    {% for feedback in feedbacks %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <strong>{{ feedback.name }}</strong> 
+                <span class="badge bg-warning text-dark">⭐ {{ feedback.rating }}/5</span>
+                <p>{{ feedback.comment }}</p>
+                <small class="text-muted">{{ feedback.created_at|date:"F d, Y" }}</small>
+            </div>
+        </div>
+    {% empty %}
+        <p>No feedback available.</p>
+    {% endfor %}
+</div>
+{% endblock %}

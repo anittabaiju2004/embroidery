@@ -1,0 +1,73 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+{% if messages %}
+<div class="alert alert-success">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="container">
+    <h2>Your Shopping Cart</h2>
+    
+    {% if cart_items %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <img src="{{ item.product.image.url }}" width="50" height="50">
+                    {{ item.product.name }}
+                </td>
+                <td>₹{{ item.product.price }}</td>
+                <td>
+                    <form method="post" action="{% url 'update_cart' item.id %}" class="update-form">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="quantity-input">
+                    </form>
+                </td>
+                <td>₹{{ item.total_price }}</td>
+                <td>
+                    <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-danger btn-sm">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                <td><strong>₹{{ total_price }}</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+    
+    <div class="text-right">
+        <a href="{% url 'user_view_products' %}" class="btn btn-secondary">Continue Shopping</a>
+        <a href="{% url 'checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Your cart is empty. <a href="{% url 'user_view_products' %}">Browse products</a> to add items.
+    </div>
+    {% endif %}
+</div>
+
+<script>
+$(document).ready(function() {
+    $('.quantity-input').change(function() {
+        $(this).closest('.update-form').submit();
+    });
+});
+</script>
+{% endblock %}

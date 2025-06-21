@@ -1,0 +1,102 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    .login-container {
+        width: 350px;
+        margin: 50px auto;
+        padding: 25px;
+        border-radius: 8px;
+        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        color: white;
+    }
+    .login-container h2 {
+        margin-bottom: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .login-container input {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: normal;
+    }
+    .login-container input[type="password"] {
+        letter-spacing: 2px;
+    }
+    .password-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .eye-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #ff7e5f;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s;
+    }
+    .eye-icon:hover {
+        color: #ff5722;
+    }
+    .login-container button {
+        background-color: #fff;
+        color: #ff7e5f;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .login-container button:hover {
+        background-color: #ff5722;
+        color: white;
+    }
+    .login-container p {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+    .login-container a {
+        color: white;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-container">
+    <h2>Login</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: yellow;">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <div class="password-wrapper">
+            <input type="password" id="password" name="password" required>
+           
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="{% url 'register' %}">Register User</a></p>
+    <p>Don't have an account? <a href="{% url 'seller_register' %}">Register Seller</a></p>
+</div>
+
+
+{% endblock %}

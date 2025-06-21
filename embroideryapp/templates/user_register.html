@@ -1,0 +1,123 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    .login-container {
+        width: 600px;
+        margin: 50px auto;
+        padding: 25px;
+        border-radius: 8px;
+        background: linear-gradient(to right, #ff7e5f, #feb47b);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+    .login-container h2 {
+        margin-bottom: 20px;
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    .form-flex {
+        display: flex;
+        gap: 20px;
+    }
+    .form-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .login-container label {
+        text-align: left;
+        margin-bottom: 2px;
+        font-size: 15px;
+    }
+    .login-container input,
+    .login-container textarea {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    .login-container input[type="password"] {
+        letter-spacing: 2px;
+        font-weight: normal; /* No bold for password */
+    }
+    .login-container input:focus,
+    .login-container textarea:focus {
+        outline: none;
+        border: 2px solid #fff;
+    }
+    .login-container button {
+        background-color: #fff;
+        color: #ff7e5f;
+        border: none;
+        padding: 12px;
+        width: 100%;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: normal;
+        margin-top: 15px;
+    }
+    .login-container button:hover {
+        background-color: #ff5722;
+        color: white;
+    }
+    .login-container p {
+        margin-top: 15px;
+        font-size: 14px;
+        text-align: center;
+    }
+    .login-container a {
+        color: white;
+        text-decoration: underline;
+    }
+    .error-message {
+        color: #fff0f0;
+        background: #d32f2f;
+        border-radius: 4px;
+        padding: 6px 10px;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+</style>
+<div class="login-container">
+    <h2>Register</h2>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="error-message">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <form method="post" autocomplete="off">
+        {% csrf_token %}
+        <div class="form-flex">
+            <div class="form-col">
+                <label for="id_name">Name:</label>
+                <input type="text" name="name" id="id_name" required>
+
+                <label for="id_email">Email:</label>
+                <input type="email" name="email" id="id_email" required
+                       pattern="^[\w\.-]+@[\w\.-]+\.\w+$"
+                       title="Enter a valid email address">
+
+                <label for="id_password">Password:</label>
+                <input type="password" name="password" id="id_password" required
+                       pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                       title="At least 8 characters, with letters and numbers">
+            </div>
+            <div class="form-col">
+                <label for="id_phone_number">Phone Number:</label>
+                <input type="text" name="phone_number" id="id_phone_number" required
+                       pattern="^\d{10,15}$"
+                       title="10-15 digits only">
+
+                <label for="id_address">Address:</label>
+                <textarea name="address" id="id_address" required rows="4"></textarea>
+            </div>
+        </div>
+        <button type="submit">Register</button>
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </form>
+</div>
+{% endblock %}

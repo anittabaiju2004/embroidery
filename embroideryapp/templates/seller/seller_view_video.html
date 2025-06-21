@@ -1,0 +1,125 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container">
+  <h1>Uploaded Videos</h1>
+  {% if videos %}
+  <div class="video-grid">
+    {% for video in videos %}
+    <div class="video-card">
+      <div class="video-thumb">
+        <video width="100%" height="160" style="object-fit:cover; border-radius:8px;" controls onclick="openModal('{{ video.video_file.url }}')">
+          <source src="{{ video.video_file.url }}" type="video/mp4">
+          Your browser does not support video playback.
+        </video>
+      </div>
+      <div class="video-info">
+        <h5 class="video-title" title="{{ video.title }}">{{ video.title|truncatechars:25 }}</h5>
+        <p class="video-desc" title="{{ video.description }}">{{ video.description|truncatechars:40 }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <p>No videos available.</p>
+  {% endif %}
+</div>
+
+<!-- Modal for full-screen video -->
+<div id="videoModal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <video id="modalVideo" controls autoplay></video>
+</div>
+
+<style>
+  .video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+  }
+
+  .video-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 220px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s;
+  }
+  .video-card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  .video-thumb {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #eee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .video-info {
+    padding: 12px 10px 10px 10px;
+    text-align: left;
+  }
+  .video-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .video-desc {
+    font-size: 0.92rem;
+    color: #555;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal video {
+    max-width: 80%;
+    max-height: 80%;
+  }
+
+  .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  function openModal(videoSrc) {
+    document.getElementById("modalVideo").src = videoSrc;
+    document.getElementById("videoModal").style.display = "flex";
+  }
+
+  function closeModal() {
+    document.getElementById("videoModal").style.display = "none";
+    document.getElementById("modalVideo").pause();
+  }
+</script>
+{% endblock %}

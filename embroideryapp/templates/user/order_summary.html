@@ -1,0 +1,40 @@
+{% extends 'user/user_index.html' %}
+{% block content %}
+<div class="container">
+    <h2>Order Summary</h2>
+    {% if orders %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+                <th>Pay</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.product.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>₹{{ order.total_amount }}</td>
+                <td>{{ order.status }}</td>
+                <td>
+                    {% if order.status == 'pending' %}
+                    <a href="{% url 'payment' order.id %}" class="btn btn-primary btn-sm">Pay Now</a>
+                    {% else %}
+                    <span class="text-success">Paid</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No orders found.</p>
+    {% endif %}
+</div>
+{% endblock %}

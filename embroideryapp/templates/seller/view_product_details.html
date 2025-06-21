@@ -1,0 +1,26 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Product Details</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>{{ product.product_name }}</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Description:</strong> {{ product.description }}</p>
+            <p><strong>Stock:</strong> {{ product.stock }}</p>
+            <p><strong>Price:</strong> ${{ product.price }}</p>
+            
+            {% if product.image %}
+            <div class="text-center">
+                <img src="{{ product.image.url }}" alt="{{ product.product_name }}" class="img-fluid" style="max-width: 300px;">
+            </div>
+            {% endif %}
+            
+            <a href="{% url 'seller_index' %}" class="btn btn-primary mt-3">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

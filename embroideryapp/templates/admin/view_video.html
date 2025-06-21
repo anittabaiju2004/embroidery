@@ -1,0 +1,60 @@
+{% extends 'admin/admin_index.html' %}
+
+{% block content %}
+{% if messages %}
+<div class="container mt-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-body">
+      <h1 class="card-title text-center mb-4">Uploaded Videos</h1>
+
+      {% if videos %}
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Video</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for video in videos %}
+            <tr>
+              <td>{{ video.title }}</td>
+              <td>{{ video.description }}</td>
+              <td>
+                <video width="150" controls>
+                  <source src="{{ video.video_file.url }}" type="video/mp4">
+                  Your browser does not support video playback.
+                </video>
+              </td>
+              <td>
+                <a href="{% url 'edit_video' video.id %}" class="btn btn-primary">
+                  Edit
+                </a>
+                <a href="{% url 'delete_video' video.id %}" class="btn btn-danger">
+                  Delete
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert alert-info text-center">
+        No videos available.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

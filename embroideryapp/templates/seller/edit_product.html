@@ -1,0 +1,105 @@
+{% extends 'seller/seller_index.html' %}
+{% block content %}
+<style>
+    .msg {
+        margin: 10px auto 20px auto;
+        width: 90%;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 15px;
+        text-align: center;
+    }
+    .msg-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+    .msg-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+    table.form-table {
+        width: 60%;
+        margin: auto;
+        border-collapse: collapse;
+    }
+    table.form-table td {
+        padding: 10px;
+        font-size: 16px;
+    }
+    table.form-table input, 
+    table.form-table textarea {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+    }
+    .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<center>
+    <h2>Edit Product</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="msg {% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="form-table">
+            <tr>
+                <td><label for="name">Product Name:</label></td>
+                <td><input type="text" name="name" value="{{ product.name }}" required></td>
+            </tr>
+            <tr>
+                <td><label for="stock">Stock:</label></td>
+                <td><input type="number" name="stock" value="{{ product.stock }}" required></td>
+            </tr>
+            <tr>
+                <td><label for="price">Price:</label></td>
+                <td><input type="text" name="price" value="{{ product.price }}" required></td>
+            </tr>
+            <tr>
+                <td><label for="description">Description:</label></td>
+                <td><textarea name="description" rows="4" required>{{ product.description }}</textarea></td>
+            </tr>
+            <tr>
+                <td><label for="image">Product Image:</label></td>
+                <td>
+                    {% if product.image %}
+                        <div>
+                            <img src="{{ product.image.url }}" alt="Current Image" style="max-width: 100px;">
+                            <br>
+                            <span style="font-size:13px;color:#888;">Current Image</span>
+                        </div>
+                    {% else %}
+                        <span style="font-size:13px;color:#888;">No image uploaded</span>
+                    {% endif %}
+                    <br>
+                    <input type="file" name="image">
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center">
+                    <button type="submit" class="btn">Update Product</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</center>
+{% endblock %}

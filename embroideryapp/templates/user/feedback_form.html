@@ -1,0 +1,65 @@
+{% extends "user/user_index.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Leave Feedback</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if latest_feedback and latest_feedback.admin_reply %}
+        <div class="alert alert-info">
+            <strong>Admin Reply:</strong><br>
+            {{ latest_feedback.admin_reply }}
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Your Name (Optional):</label>
+            <input type="text" name="name" id="name" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="rating">Rating:</label>
+            <select name="rating" id="rating" class="form-control">
+                <option value="">-- Select Rating --</option>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="comment">Comment:</label>
+            <textarea name="comment" id="comment" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+    </form>
+
+    {% if user_feedbacks %}
+        <hr>
+        <h4>Your Previous Feedback</h4>
+        {% for feedback in user_feedbacks %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <span class="badge bg-warning text-dark">⭐ {{ feedback.rating }}/5</span>
+                    <p class="mb-1">{{ feedback.comment }}</p>
+                    <small class="text-muted">{{ feedback.created_at|date:"F d, Y" }}</small>
+                    {% if feedback.admin_reply %}
+                        <div class="alert alert-info mt-2 mb-0">
+                            <strong>Admin Reply:</strong> {{ feedback.admin_reply }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No previous feedback found.</p>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

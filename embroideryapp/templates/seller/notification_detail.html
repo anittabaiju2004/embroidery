@@ -1,0 +1,73 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Notification Details</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h5 class="card-title">{{ notification.message }}</h5>
+                <p class="text-muted">Received {{ notification.created_at|timesince }} ago</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Product Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="media">
+                                <img src="{{ notification.product.image.url }}" 
+                                     class="mr-3" 
+                                     width="100" 
+                                     alt="{{ notification.product.name }}">
+                                <div class="media-body">
+                                    <h6>{{ notification.product.name }}</h6>
+                                    <p>{{ notification.product.description }}</p>
+                                    <p><strong>Current Stock:</strong> {{ current_stock }}</p>
+                                    <p><strong>Price:</strong> ₹{{ notification.product.price }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Notification Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Notification Type:</strong> 
+                                {% if "out of stock" in notification.message.lower %}
+                                    <span class="badge badge-danger">Out of Stock</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Low Stock</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Received:</strong> {{ notification.created_at }}</p>
+                            <p><strong>Status:</strong> 
+                                {% if notification.is_read %}
+                                    <span class="badge badge-secondary">Read</span>
+                                {% else %}
+                                    <span class="badge badge-success">Unread</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'seller_notifications' %}" class="btn btn-secondary">Back to Notifications</a>
+           <a href="{% url 'view_product_details' notification.product.id %}" class="btn btn-primary ml-2">
+    View Product
+</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

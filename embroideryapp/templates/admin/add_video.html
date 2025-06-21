@@ -1,0 +1,85 @@
+{% extends 'admin/admin_index.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          <h1 class="text-center mb-4">Upload Video</h1>
+
+          {% if error %}
+          <div class="alert alert-danger text-center mb-4">
+            {{ error }}
+          </div>
+          {% endif %}
+          {% if messages %}
+          <div class="mt-4">
+            {% for message in messages %}
+            <div class="alert alert-success text-center">
+              {{ message }}
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <form action="{% url 'add_video' %}" method="post" enctype="multipart/form-data" class="needs-validation"
+            novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="videoName" class="form-label">Video Name</label>
+              <input type="text" class="form-control" id="videoName" name="videoName" placeholder="Enter video name"
+                required>
+            </div>
+
+            <div class="mb-3">
+              <label for="videoDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="videoDescription" name="videoDescription" rows="3"
+                placeholder="Enter video description" required></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label for="videoInput" class="form-label">Video File</label>
+              <input class="form-control" type="file" id="videoInput" name="videoInput" accept="video/*" required>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg">Upload Video</button>
+            </div>
+          </form>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    border-radius: 10px;
+  }
+
+  .form-control {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .btn-primary {
+    background-color: #4e73df;
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    background-color: #2e59d9;
+  }
+
+  label {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+</style>
+{% endblock %}

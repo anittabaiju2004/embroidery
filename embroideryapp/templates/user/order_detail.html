@@ -1,0 +1,90 @@
+{% extends 'user/user_index.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h4>Order Details - #{{ order.id }}</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Order Information</h5>
+                    <p><strong>Date:</strong> {{ order.order_date|date:"M d, Y H:i" }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge 
+                            {% if order.status == 'completed' %}badge-success
+                            {% elif order.status == 'cancelled' %}badge-danger
+                            {% else %}badge-warning{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </p>
+                    
+                    <h5 class="mt-4">Product Details</h5>
+                    {% for item in order.items.all %}
+                    <div class="media mb-3">
+                        <img src="{{ item.product.image.url }}" class="mr-3" width="100" alt="{{ item.product.name }}">
+                        <div class="media-body">
+                            <h6>{{ item.product.name }}</h6>
+                            <p>{{ item.product.description }}</p>
+                            <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+                            <p><strong>Price:</strong> ₹{{ item.price }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="col-md-6">
+                    <h5>Payment Information</h5>
+                    {% if payment %}
+                        <p><strong>Payment Method:</strong> {{ payment.get_payment_method_display }}</p>
+                        <p><strong>Amount Paid:</strong> ₹{{ payment.amount }}</p>
+                        <p><strong>Payment Date:</strong> {{ payment.payment_date|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> 
+                            {% if payment.is_successful %}
+                                <span class="badge badge-success">Successful</span>
+                            {% else %}
+                                <span class="badge badge-danger">Failed</span>
+                            {% endif %}
+                        </p>
+                        
+                        {% if payment.payment_method == 'card' %}
+                            <div class="card-details mt-3">
+                                <h6>Card Details</h6>
+                                <p><strong>Card Holder:</strong> {{ payment.card_holder_name }}</p>
+                                <p><strong>Card Number:</strong> **** **** **** {{ payment.card_number }}</p>
+                                <p><strong>Expiry:</strong> {{ payment.card_expiry }}</p>
+                            </div>
+                        {% elif payment.payment_method == 'upi' %}
+                            <div class="upi-details mt-3">
+                                <h6>UPI Details</h6>
+                                <p><strong>UPI ID:</strong> {{ payment.upi_id }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if payment.transaction_id %}
+                            <p><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            No payment information available for this order.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <h5>Shipping Information</h5>
+                    <p><strong>Deliver to:</strong> {{ order.user.name }}</p>
+                    <p><strong>Address:</strong> {{ order.user.address }}</p>
+                    <p><strong>Phone:</strong> {{ order.user.phone_number }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'order_history' %}" class="btn btn-secondary">Back to Orders</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

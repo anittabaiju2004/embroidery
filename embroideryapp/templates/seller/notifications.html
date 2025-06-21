@@ -1,0 +1,30 @@
+{% extends 'seller/seller_index.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Your Notifications</h2>
+    
+    {% if notifications %}
+    <div class="list-group">
+        {% for notification in notifications %}
+        <a href="{% url 'view_notification' notification.id %}" 
+           class="list-group-item list-group-item-action {% if not notification.is_read %}list-group-item-primary{% endif %}">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    {% if not notification.is_read %}
+                    <span class="badge badge-info mr-2">New</span>
+                    {% endif %}
+                    {{ notification.message }}
+                </div>
+                <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info mt-4">
+        You don't have any notifications yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
