@@ -687,50 +687,65 @@ def view_product_list(request):
 def seller_view_videos(request):
     videos = Video.objects.all()
     return render(request, 'seller/seller_view_video.html', {'videos': videos})
+from django.db.models import Prefetch
 
 def seller_orders(request):
     if 'id' not in request.session or request.session.get('user_type') != 'seller':
-        messages.error(request, "Please login as a seller to view orders")
+        messages.error(request, "Please login as a seller")
         return redirect('login')
-    
+
     seller_id = request.session['id']
+
     orders = (
         Order.objects
-             .filter(seller_id=seller_id)
-             .select_related('user')                      # 1 query for each related user
-             .prefetch_related(
-                 Prefetch('items', queryset=OrderItem.objects.select_related('product'))
-             )                                            # 1 query for all items+products
-             .order_by('-order_date')
+        .filter(items__product__seller_id=seller_id)
+        .distinct()
+        .select_related('user')
+        .prefetch_related(
+            Prefetch(
+                'items',
+                queryset=OrderItem.objects.filter(
+                    product__seller_id=seller_id
+                ).select_related('product')
+            )
+        )
+        .order_by('-order_date')
     )
 
-    orders_with_payments = []
-    for order in orders:
-        payment = Payment.objects.filter(order=order).first()   # returns None if not found
-        orders_with_payments.append({'order': order,
-                                     'payment': payment})
+    payments = Payment.objects.filter(order__in=orders)
+    payment_map = {p.order_id: p for p in payments}
 
-    return render(request, 'seller/orders.html',
-                  {'orders_with_payments': orders_with_payments})
+    orders_with_payments = [
+        {
+            'order': order,
+            'payment': payment_map.get(order.id)
+        }
+        for order in orders
+    ]
 
+    return render(
+        request,
+        'seller/orders.html',
+        {'orders_with_payments': orders_with_payments}
+    )
 def seller_order_detail(request, order_id):
     if 'id' not in request.session or request.session.get('user_type') != 'seller':
-        messages.error(request, "Please login as a seller to view order details")
+        messages.error(request, "Please login as a seller")
         return redirect('login')
-    
+
     seller_id = request.session['id']
-    order = get_object_or_404(Order, pk=order_id, seller_id=seller_id)
-    
-    try:
-        payment = Payment.objects.get(order=order)
-    except Payment.DoesNotExist:
-        payment = None
-    
+
+    order = get_object_or_404(
+        Order.objects.filter(items__product__seller_id=seller_id).distinct(),
+        pk=order_id
+    )
+
+    payment = Payment.objects.filter(order=order).first()
+
     return render(request, 'seller/order_detail.html', {
         'order': order,
         'payment': payment
     })
-
 
 def seller_notifications(request):
     if 'id' not in request.session or request.session.get('user_type') != 'seller':
